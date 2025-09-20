@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amigo Oculto Online</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .section {
+            padding: 30px;
+            display: none;
+        }
+        
+        .active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            border-color: #6a11cb;
+            outline: none;
+        }
+        
+        button {
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            font-weight: 600;
+            margin: 5px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(90deg, #feb47b, #ff7e5f);
+        }
+        
+        .participants-list {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .participant-item {
+            padding: 10px 15px;
+            background-color: white;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .code-display {
+            background-color: #f1f3f5;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            color: #6a11cb;
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .result-name {
+            font-size: 2rem;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        
+        .instructions {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 0.9rem;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        .button-group button {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .button-group button {
+                width: 100%;
+            }
+        }
+    </style>
+    
+    <!-- Adicione os SDKs do Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Amigo Oculto Online</h1>
+            <p class="subtitle">Organize seu amigo secreto de forma fácil e divertida!</p>
+        </header>
+        
+        <main>
+            <!-- Seção de Criação de Sala -->
+            <section id="create-section" class="section active">
+                <h2>Criar Nova Sala</h2>
+                <div class="form-group">
+                    <label for="host-name">Seu Nome (Anfitrião)</label>
+                    <input type="text" id="host-name" placeholder="Digite seu nome">
+                </div>
+                <div class="form-group">
+                    <label for="room-name">Nome da Sala</label>
+                    <input type="text" id="room-name" placeholder="Digite um nome para a sala">
+                </div>
+                <div class="button-group">
+                    <button id="create-room-btn">Criar Sala</button>
+                </div>
+            </section>
+            
+            <!-- Seção de Entrada na Sala -->
+            <section id="join-section" class="section">
+                <h2>Entrar em uma Sala</h2>
+                <div class="form-group">
+                    <label for="participant-name">Seu Nome</label>
+                    <input type="text" id="participant-name" placeholder="Digite seu nome">
+                </div>
+                <div class="form-group">
+                    <label for="room-code">Código da Sala</label>
+                    <input type="text" id="room-code" placeholder="Digite o código da sala">
+                </div>
+                <div class="button-group">
+                    <button id="join-room-btn">Entrar na Sala</button>
+                    <button class="btn-secondary" id="back-to-create">Voltar</button>
+                </div>
+            </section>
+            
+            <!-- Seção da Sala -->
+            <section id="room-section" class="section">
+                <h2>Sala: <span id="display-room-name"></span></h2>
+                <div class="code-display">
+                    Código: <span id="display-room-code"></span>
+                </div>
+                
+                <h3>Participantes</h3>
+                <div class="participants-list" id="participants-list">
+                    <!-- Lista de participantes será gerada aqui -->
+                </div>
+                
+                <div id="host-controls">
+                    <div class="button-group">
+                        <button id="start-draw-btn">Realizar Sorteio</button>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-secondary" id="leave-room">Sair da Sala</button>
+                </div>
+            </section>
+            
+            <!-- Seção de Resultados -->
+            <section id="result-section" class="section">
+                <h2>Resultado do Amigo Oculto</h2>
+                <div class="result-card">
+                    <p>Seu amigo oculto é:</p>
+                    <div class="result-name" id="drawn-friend"></div>
+                    <p>Divirta-se com o jogo!</p>
+                </div>
+                
+                <div class="instructions">
+                    <p><strong>Instruções:</strong> Mantenha em segredo quem você tirou. O anfitrião já foi notificado sobre todos os pares.</p>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-secondary" id="back-to-room">Voltar para a Sala</button>
+                </div>
+            </section>
+            
+            <!-- Links de Navegação Inicial -->
+            <div id="initial-options" style="text-align: center; padding: 20px;">
+                <p>Já tem uma sala?</p>
+                <div class="button-group">
+                    <button id="join-existing-btn">Entrar em uma Sala Existente</button>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>Gota Games &copy; 2025 - Todos os direitos reservados</p>
+        </footer>
+    </div>
+
+    <script>
+        // Configuração do Firebase com suas credenciais
+        const firebaseConfig = {
+            apiKey: "AIzaSyDcfIkzxxwc7tbY9RXpOzQsGiqJ_NewdME",
+            authDomain: "amigo-oculto-1e74b.firebaseapp.com",
+            projectId: "amigo-oculto-1e74b",
+            storageBucket: "amigo-oculto-1e74b.firebasestorage.app",
+            messagingSenderId: "260384566404",
+            appId: "1:260384566404:web:1b6c29d0099d68ff9d26d1"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos da interface
+            const createSection = document.getElementById('create-section');
+            const joinSection = document.getElementById('join-section');
+            const roomSection = document.getElementById('room-section');
+            const resultSection = document.getElementById('result-section');
+            const initialOptions = document.getElementById('initial-options');
+            
+            // Botões de navegação
+            const joinExistingBtn = document.getElementById('join-existing-btn');
+            const createRoomBtn = document.getElementById('create-room-btn');
+            const joinRoomBtn = document.getElementById('join-room-btn');
+            const backToCreateBtn = document.getElementById('back-to-create');
+            const leaveRoomBtn = document.getElementById('leave-room');
+            const backToRoomBtn = document.getElementById('back-to-room');
+            const startDrawBtn = document.getElementById('start-draw-btn');
+            
+            // Elementos de dados
+            const hostNameInput = document.getElementById('host-name');
+            const roomNameInput = document.getElementById('room-name');
+            const participantNameInput = document.getElementById('participant-name');
+            const roomCodeInput = document.getElementById('room-code');
+            const displayRoomName = document.getElementById('display-room-name');
+            const displayRoomCode = document.getElementById('display-room-code');
+            const participantsList = document.getElementById('participants-list');
+            const drawnFriend = document.getElementById('drawn-friend');
+            
+            // Estado da aplicação
+            let currentRoom = null;
+            let currentUser = null;
+            let isHost = false;
+            let roomListener = null; // Para detener o listener em tempo real
+
+            // Navegação: Mostrar seção de entrada em sala existente
+            joinExistingBtn.addEventListener('click', () => {
+                createSection.classList.remove('active');
+                joinSection.classList.add('active');
+                initialOptions.style.display = 'none';
+            });
+            
+            // Navegação: Voltar para criação de sala
+            backToCreateBtn.addEventListener('click', () => {
+                joinSection.classList.remove('active');
+                createSection.classList.add('active');
+                initialOptions.style.display = 'block';
+            });
+            
+            // Criar uma nova sala
+            createRoomBtn.addEventListener('click', async () => {
+                const hostName = hostNameInput.value.trim();
+                const roomName = roomNameInput.value.trim();
+                
+                if (!hostName || !roomName) {
+                    alert('Por favor, preencha todos os campos.');
+                    return;
+                }
+                
+                // Gerar código aleatório para a sala
+                const roomCode = generateRoomCode();
+                
+                try {
+                    // Criar nova sala no Firestore
+                    await db.collection('rooms').doc(roomCode).set({
+                        name: roomName,
+                        host: hostName,
+                        participants: [hostName],
+                        drawnPairs: {},
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    // Definir usuário atual
+                    currentUser = hostName;
+                    isHost = true;
+                    currentRoom = roomCode;
+                    
+                    // Atualizar UI
+                    displayRoomName.textContent = roomName;
+                    displayRoomCode.textContent = roomCode;
+                    
+                    // Configurar listener em tempo real para atualizações
+                    setupRoomListener(roomCode);
+                    
+                    // Mostrar seção da sala
+                    createSection.classList.remove('active');
+                    roomSection.classList.add('active');
+                    initialOptions.style.display = 'none';
+                    
+                    // Mostrar controles do anfitrião
+                    document.getElementById('host-controls').style.display = 'block';
+                } catch (error) {
+                    console.error('Erro ao criar sala:', error);
+                    alert('Erro ao criar sala. Tente novamente.');
+                }
+            });
+            
+            // Entrar em uma sala existente
+            joinRoomBtn.addEventListener('click', async () => {
+                const participantName = participantNameInput.value.trim();
+                const roomCode = roomCodeInput.value.trim().toUpperCase();
+                
+                if (!participantName || !roomCode) {
+                    alert('Por favor, preencha todos os campos.');
+                    return;
+                }
+                
+                try {
+                    // Verificar se a sala existe
+                    const roomDoc = await db.collection('rooms').doc(roomCode).get();
+                    
+                    if (!roomDoc.exists) {
+                        alert('Sala não encontrada. Verifique o código.');
+                        return;
+                    }
+                    
+                    const roomData = roomDoc.data();
+                    
+                    // Verificar se o nome já existe na sala
+                    if (roomData.participants.includes(participantName)) {
+                        alert('Já existe um participante com esse nome na sala.');
+                        return;
+                    }
+                    
+                    // Adicionar participante à sala
+                    await db.collection('rooms').doc(roomCode).update({
+                        participants: firebase.firestore.FieldValue.arrayUnion(participantName)
+                    });
+                    
+                    // Definir usuário atual
+                    currentUser = participantName;
+                    isHost = false;
+                    currentRoom = roomCode;
+                    
+                    // Atualizar UI
+                    displayRoomName.textContent = roomData.name;
+                    displayRoomCode.textContent = roomCode;
+                    
+                    // Configurar listener em tempo real para atualizações
+                    setupRoomListener(roomCode);
+                    
+                    // Mostrar seção da sala
+                    joinSection.classList.remove('active');
+                    roomSection.classList.add('active');
+                    initialOptions.style.display = 'none';
+                    
+                    // Esconder controles do anfitrião para participantes comuns
+                    document.getElementById('host-controls').style.display = 'none';
+                } catch (error) {
+                    console.error('Erro ao entrar na sala:', error);
+                    alert('Erro ao entrar na sala. Tente novamente.');
+                }
+            });
+            
+            // Sair da sala
+            leaveRoomBtn.addEventListener('click', async () => {
+                if (!currentRoom || !currentUser) return;
+                
+                try {
+                    if (isHost) {
+                        // Se for o anfitrião, remover a sala completamente
+                        await db.collection('rooms').doc(currentRoom).delete();
+                    } else {
+                        // Se for participante, remover da lista
+                        await db.collection('rooms').doc(currentRoom).update({
+                            participants: firebase.firestore.FieldValue.arrayRemove(currentUser)
+                        });
+                    }
+                    
+                    // Parar o listener em tempo real
+                    if (roomListener) {
+                        roomListener();
+                    }
+                    
+                    // Limpar estado
+                    currentRoom = null;
+                    currentUser = null;
+                    isHost = false;
+                    
+                    // Voltar para a tela inicial
+                    roomSection.classList.remove('active');
+                    createSection.classList.add('active');
+                    initialOptions.style.display = 'block';
+                    
+                    // Limpar formulários
+                    hostNameInput.value = '';
+                    roomNameInput.value = '';
+                    participantNameInput.value = '';
+                    roomCodeInput.value = '';
+                } catch (error) {
+                    console.error('Erro ao sair da sala:', error);
+                    alert('Erro ao sair da sala. Tente novamente.');
+                }
+            });
+            
+            // Voltar para a sala a partir dos resultados
+            backToRoomBtn.addEventListener('click', () => {
+                resultSection.classList.remove('active');
+                roomSection.classList.add('active');
+            });
+            
+            // Realizar o sorteio
+            startDrawBtn.addEventListener('click', async () => {
+                if (!currentRoom) return;
+                
+                try {
+                    // Obter dados atuais da sala
+                    const roomDoc = await db.collection('rooms').doc(currentRoom).get();
+                    
+                    if (!roomDoc.exists) {
+                        alert('Sala não encontrada.');
+                        return;    }
+                    
+                    const roomData = roomDoc.data();
+                    
+                    if (roomData.participants.length < 2) {
+                        alert('É necessário pelo menos 2 participantes para realizar o sorteio.');
+                        return;
+                    }
+                    
+                    // Realizar o sorteio
+                    const drawResult = performDraw(roomData.participants);
+                    
+                    // Atualizar a sala com os resultados
+                    await db.collection('rooms').doc(currentRoom).update({
+                        drawnPairs: drawResult
+                    });
+                    
+                    // Mostrar o resultado para o anfitrião (que vê todos os pares)
+                    if (isHost) {
+                        let resultMessage = "Resultado do sorteio:\n\n";
+                        for (const [giver, receiver] of Object.entries(drawResult)) {
+                            resultMessage += `${giver} tirou ${receiver}\n`;
+                        }
+                        alert(resultMessage);
+                    }
+                    
+                    // Mostrar o resultado para o usuário atual
+                    drawnFriend.textContent = drawResult[currentUser];
+                    
+                    // Mostrar a seção de resultados
+                    roomSection.classList.remove('active');
+                    resultSection.classList.add('active');
+                } catch (error) {
+                    console.error('Erro ao realizar sorteio:', error);
+                    alert('Erro ao realizar sorteio. Tente novamente.');
+                }
+            });
+            
+            // Configurar listener em tempo real para a sala
+            function setupRoomListener(roomCode) {
+                // Parar listener anterior se existir
+                if (roomListener) {
+                    roomListener();
+                }
+                
+                roomListener = db.collection('rooms').doc(roomCode)
+                    .onSnapshot((doc) => {
+                        if (doc.exists) {
+                            const roomData = doc.data();
+                            updateParticipantsList(roomData.participants, roomData.host);
+                            
+                            // Se o sorteio foi realizado e o usuário está na sala, mostrar resultado
+                            if (roomData.drawnPairs && roomData.drawnPairs[currentUser] && 
+                                roomSection.classList.contains('active')) {
+                                drawnFriend.textContent = roomData.drawnPairs[currentUser];
+                                roomSection.classList.remove('active');
+                                resultSection.classList.add('active');
+                            }
+                        } else {
+                            // Sala foi excluída
+                            alert('Esta sala foi excluída pelo anfitrião.');
+                            leaveRoomBtn.click();
+                        }
+                    }, (error) => {
+                        console.error('Erro no listener da sala:', error);
+                    });
+            }
+            
+            // Atualizar a lista de participantes
+            function updateParticipantsList(participants, host) {
+                participantsList.innerHTML = '';
+                participants.forEach(participant => {
+                    const participantItem = document.createElement('div');
+                    participantItem.className = 'participant-item';
+                    
+                    const nameSpan = document.createElement('span');
+                    nameSpan.textContent = participant;
+                    
+                    const roleSpan = document.createElement('span');
+                    if (participant === host) {
+                        roleSpan.textContent = 'Anfitrião';
+                        roleSpan.style.color = '#6a11cb';
+                        roleSpan.style.fontWeight = 'bold';
+                    }
+                    
+                    participantItem.appendChild(nameSpan);
+                    participantItem.appendChild(roleSpan);
+                    participantsList.appendChild(participantItem);
+                });
+            }
+            
+            // Gerar código aleatório para a sala
+            function generateRoomCode() {
+                const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                let result = '';
+                for (let i = 0; i < 6; i++) {
+                    result += characters.charAt(Math.floor(Math.random() * characters.length));
+                }
+                return result;
+            }
+            
+            // Realizar o sorteio (algoritmo para garantir que ninguém tire a si mesmo)
+            function performDraw(participants) {
+                const receivers = [...participants];
+                const result = {};
+                
+                // Embaralhar a lista de receptores
+                for (let i = receivers.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [receivers[i], receivers[j]] = [receivers[j], receivers[i]];
+                }
+                
+                // Atribuir cada doador a um receptor, garantindo que ninguém tire a si mesmo
+                for (let i = 0; i < participants.length; i++) {
+                    let giver = participants[i];
+                    let receiver = receivers[i];
+                    
+                    // Se a pessoa tirar a si mesma, trocar com a próxima
+                    if (giver === receiver) {
+                        const nextIndex = (i + 1) % participants.length;
+                        receivers[i] = receivers[nextIndex];
+                        receivers[nextIndex] = receiver;
+                        receiver = receivers[i];
+                    }
+                    
+                    result[giver] = receiver;
+                }
+                
+                return result;
+            }
+        });
+    </script>
+</body>
+</html>
+```
+   
