@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amigo Oculto Online</title>
+    <title>Amigo Oculto Premium</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -24,38 +25,45 @@
         }
         
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             width: 100%;
             background-color: white;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
         }
         
         header {
             background: linear-gradient(90deg, #ff7e5f, #feb47b);
             color: white;
             text-align: center;
-            padding: 30px 20px;
+            padding: 20px;
+            flex-shrink: 0;
         }
         
         h1 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             margin-bottom: 10px;
         }
         
         .subtitle {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             opacity: 0.9;
         }
         
         .section {
-            padding: 30px;
+            padding: 25px;
             display: none;
+            flex: 1;
+            overflow-y: auto;
         }
         
         .active {
-            display: block;
+            display: flex;
+            flex-direction: column;
         }
         
         .form-group {
@@ -112,9 +120,9 @@
         .participants-list {
             background-color: #f8f9fa;
             border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            max-height: 300px;
+            padding: 15px;
+            margin: 15px 0;
+            max-height: 200px;
             overflow-y: auto;
         }
         
@@ -122,7 +130,7 @@
             padding: 10px 15px;
             background-color: white;
             border-radius: 6px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -134,69 +142,150 @@
             padding: 15px;
             border-radius: 8px;
             text-align: center;
-            margin: 20px 0;
-            font-size: 1.5rem;
+            margin: 15px 0;
+            font-size: 1.3rem;
             font-weight: bold;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             color: #6a11cb;
         }
         
         .result-card {
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             color: white;
-            padding: 30px;
+            padding: 25px;
             border-radius: 12px;
             text-align: center;
-            margin: 20px 0;
+            margin: 15px 0;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
         
         .result-name {
-            font-size: 2rem;
-            margin: 20px 0;
+            font-size: 1.8rem;
+            margin: 15px 0;
             font-weight: bold;
         }
         
         .instructions {
             background-color: #e9ecef;
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
-            margin: 20px 0;
+            margin: 15px 0;
             font-size: 0.9rem;
         }
         
         footer {
             text-align: center;
-            padding: 20px;
+            padding: 15px;
             color: #6c757d;
             font-size: 0.9rem;
             border-top: 1px solid #dee2e6;
+            flex-shrink: 0;
         }
         
         .button-group {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            margin: 20px 0;
+            margin: 15px 0;
             justify-content: center;
         }
         
         .button-group button {
             flex: 1;
-            min-width: 200px;
+            min-width: 180px;
         }
         
-        @media (max-width: 600px) {
+        /* Estilos do Chat */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 300px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+        }
+        
+        .message {
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+        
+        .message.own {
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+            color: white;
+            margin-left: auto;
+        }
+        
+        .message.other {
+            background-color: white;
+            border: 1px solid #ddd;
+        }
+        
+        .message-sender {
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+        }
+        
+        .message-text {
+            font-size: 0.9rem;
+        }
+        
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            background-color: white;
+            border-top: 1px solid #ddd;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            margin-right: 10px;
+            padding: 10px;
+        }
+        
+        .chat-input button {
+            margin: 0;
+            padding: 10px 15px;
+        }
+        
+        .room-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            height: 100%;
+        }
+        
+        .room-column {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        @media (max-width: 768px) {
+            .room-layout {
+                grid-template-columns: 1fr;
+            }
+            
             .container {
-                border-radius: 10px;
+                height: 95vh;
             }
             
             h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
             
             .section {
-                padding: 20px;
+                padding: 15px;
             }
             
             .button-group {
@@ -206,27 +295,77 @@
             .button-group button {
                 width: 100%;
             }
+            
+            .chat-container {
+                height: 250px;
+            }
+        }
+        
+        .password-note {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .login-options {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background-color: #e9ecef;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .tab-button.active {
+            background-color: #6a11cb;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
         }
     </style>
     
-    <!-- Adicione os SDKs do Firebase -->
+    <!-- SDKs do Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Amigo Oculto Online</h1>
-            <p class="subtitle">Organize seu amigo secreto de forma fácil e divertida!</p>
+            <h1>Amigo Oculto Premium</h1>
+            <p class="subtitle">Com chat e login seguro!</p>
         </header>
         
-        <main>
+        <main style="flex: 1; overflow-y: auto;">
             <!-- Seção de Criação de Sala -->
             <section id="create-section" class="section active">
                 <h2>Criar Nova Sala</h2>
                 <div class="form-group">
                     <label for="host-name">Seu Nome (Anfitrião)</label>
                     <input type="text" id="host-name" placeholder="Digite seu nome">
+                </div>
+                <div class="form-group">
+                    <label for="host-password">Sua Palavra-passe</label>
+                    <input type="password" id="host-password" placeholder="Crie uma palavra-passe">
+                    <div class="password-note">Guarde esta palavra-passe para retornar à sala depois</div>
                 </div>
                 <div class="form-group">
                     <label for="room-name">Nome da Sala</label>
@@ -240,14 +379,47 @@
             <!-- Seção de Entrada na Sala -->
             <section id="join-section" class="section">
                 <h2>Entrar em uma Sala</h2>
-                <div class="form-group">
-                    <label for="participant-name">Seu Nome</label>
-                    <input type="text" id="participant-name" placeholder="Digite seu nome">
+                
+                <div class="login-options">
+                    <div class="tab-buttons">
+                        <button class="tab-button active" data-tab="new-user">Novo Participante</button>
+                        <button class="tab-button" data-tab="returning-user">Já Tenho Login</button>
+                    </div>
+                    
+                    <!-- Novo Usuário -->
+                    <div id="new-user-tab" class="tab-content active">
+                        <div class="form-group">
+                            <label for="participant-name">Seu Nome</label>
+                            <input type="text" id="participant-name" placeholder="Digite seu nome">
+                        </div>
+                        <div class="form-group">
+                            <label for="participant-password">Criar Palavra-passe</label>
+                            <input type="password" id="participant-password" placeholder="Crie sua palavra-passe">
+                            <div class="password-note">Guarde esta palavra-passe para retornar à sala</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="room-code">Código da Sala</label>
+                            <input type="text" id="room-code" placeholder="Digite o código da sala">
+                        </div>
+                    </div>
+                    
+                    <!-- Usuário Retornando -->
+                    <div id="returning-user-tab" class="tab-content">
+                        <div class="form-group">
+                            <label for="returning-name">Seu Nome</label>
+                            <input type="text" id="returning-name" placeholder="Digite seu nome">
+                        </div>
+                        <div class="form-group">
+                            <label for="returning-password">Sua Palavra-passe</label>
+                            <input type="password" id="returning-password" placeholder="Digite sua palavra-passe">
+                        </div>
+                        <div class="form-group">
+                            <label for="returning-room-code">Código da Sala</label>
+                            <input type="text" id="returning-room-code" placeholder="Digite o código da sala">
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="room-code">Código da Sala</label>
-                    <input type="text" id="room-code" placeholder="Digite o código da sala">
-                </div>
+                
                 <div class="button-group">
                     <button id="join-room-btn">Entrar na Sala</button>
                     <button class="btn-secondary" id="back-to-create">Voltar</button>
@@ -256,24 +428,41 @@
             
             <!-- Seção da Sala -->
             <section id="room-section" class="section">
-                <h2>Sala: <span id="display-room-name"></span></h2>
-                <div class="code-display">
-                    Código: <span id="display-room-code"></span>
-                </div>
-                
-                <h3>Participantes</h3>
-                <div class="participants-list" id="participants-list">
-                    <!-- Lista de participantes será gerada aqui -->
-                </div>
-                
-                <div id="host-controls">
-                    <div class="button-group">
-                        <button id="start-draw-btn">Realizar Sorteio</button>
+                <div class="room-layout">
+                    <div class="room-column">
+                        <h2>Sala: <span id="display-room-name"></span></h2>
+                        <div class="code-display">
+                            Código: <span id="display-room-code"></span>
+                        </div>
+                        
+                        <h3>Participantes Online</h3>
+                        <div class="participants-list" id="participants-list">
+                            <!-- Lista de participantes será gerada aqui -->
+                        </div>
+                        
+                        <div id="host-controls">
+                            <div class="button-group">
+                                <button id="start-draw-btn">Realizar Sorteio</button>
+                            </div>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button class="btn-secondary" id="leave-room">Sair da Sala</button>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="button-group">
-                    <button class="btn-secondary" id="leave-room">Sair da Sala</button>
+                    
+                    <div class="room-column">
+                        <h3>Chat da Sala</h3>
+                        <div class="chat-container">
+                            <div class="chat-messages" id="chat-messages">
+                                <!-- Mensagens do chat serão exibidas aqui -->
+                            </div>
+                            <div class="chat-input">
+                                <input type="text" id="chat-input" placeholder="Digite sua mensagem...">
+                                <button id="send-message-btn"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
             
@@ -310,7 +499,7 @@
     </div>
 
     <script>
-        // Configuração do Firebase com suas credenciais
+        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDcfIkzxxwc7tbY9RXpOzQsGiqJ_NewdME",
             authDomain: "amigo-oculto-1e74b.firebaseapp.com",
@@ -340,78 +529,106 @@
             const leaveRoomBtn = document.getElementById('leave-room');
             const backToRoomBtn = document.getElementById('back-to-room');
             const startDrawBtn = document.getElementById('start-draw-btn');
+            const sendMessageBtn = document.getElementById('send-message-btn');
             
             // Elementos de dados
             const hostNameInput = document.getElementById('host-name');
+            const hostPasswordInput = document.getElementById('host-password');
             const roomNameInput = document.getElementById('room-name');
             const participantNameInput = document.getElementById('participant-name');
+            const participantPasswordInput = document.getElementById('participant-password');
             const roomCodeInput = document.getElementById('room-code');
+            const returningNameInput = document.getElementById('returning-name');
+            const returningPasswordInput = document.getElementById('returning-password');
+            const returningRoomCodeInput = document.getElementById('returning-room-code');
             const displayRoomName = document.getElementById('display-room-name');
             const displayRoomCode = document.getElementById('display-room-code');
             const participantsList = document.getElementById('participants-list');
             const drawnFriend = document.getElementById('drawn-friend');
+            const chatInput = document.getElementById('chat-input');
+            const chatMessages = document.getElementById('chat-messages');
             
             // Estado da aplicação
             let currentRoom = null;
             let currentUser = null;
+            let currentUserPassword = null;
             let isHost = false;
-            let roomListener = null; // Para detener o listener em tempo real
+            let roomListener = null;
+            let chatListener = null;
+            let isReturningUser = false;
 
-            // Navegação: Mostrar seção de entrada em sala existente
+            // Sistema de abas
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    
+                    // Atualizar botões
+                    document.querySelectorAll('.tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Atualizar conteúdo
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(`${tabName}-tab`).classList.add('active');
+                    
+                    isReturningUser = (tabName === 'returning-user');
+                });
+            });
+
+            // Navegação
             joinExistingBtn.addEventListener('click', () => {
                 createSection.classList.remove('active');
                 joinSection.classList.add('active');
                 initialOptions.style.display = 'none';
             });
             
-            // Navegação: Voltar para criação de sala
             backToCreateBtn.addEventListener('click', () => {
                 joinSection.classList.remove('active');
                 createSection.classList.add('active');
                 initialOptions.style.display = 'block';
             });
             
-            // Criar uma nova sala
+            // Criar sala
             createRoomBtn.addEventListener('click', async () => {
                 const hostName = hostNameInput.value.trim();
+                const hostPassword = hostPasswordInput.value.trim();
                 const roomName = roomNameInput.value.trim();
                 
-                if (!hostName || !roomName) {
+                if (!hostName || !hostPassword || !roomName) {
                     alert('Por favor, preencha todos os campos.');
                     return;
                 }
                 
-                // Gerar código aleatório para a sala
                 const roomCode = generateRoomCode();
                 
                 try {
-                    // Criar nova sala no Firestore
                     await db.collection('rooms').doc(roomCode).set({
                         name: roomName,
                         host: hostName,
                         participants: [hostName],
+                        participantPasswords: { [hostName]: hostPassword },
                         drawnPairs: {},
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                     
-                    // Definir usuário atual
                     currentUser = hostName;
+                    currentUserPassword = hostPassword;
                     isHost = true;
                     currentRoom = roomCode;
                     
-                    // Atualizar UI
                     displayRoomName.textContent = roomName;
                     displayRoomCode.textContent = roomCode;
                     
-                    // Configurar listener em tempo real para atualizações
                     setupRoomListener(roomCode);
+                    setupChatListener(roomCode);
                     
-                    // Mostrar seção da sala
                     createSection.classList.remove('active');
                     roomSection.classList.add('active');
                     initialOptions.style.display = 'none';
                     
-                    // Mostrar controles do anfitrião
                     document.getElementById('host-controls').style.display = 'block';
                 } catch (error) {
                     console.error('Erro ao criar sala:', error);
@@ -419,18 +636,26 @@
                 }
             });
             
-            // Entrar em uma sala existente
+            // Entrar na sala
             joinRoomBtn.addEventListener('click', async () => {
-                const participantName = participantNameInput.value.trim();
-                const roomCode = roomCodeInput.value.trim().toUpperCase();
+                let participantName, participantPassword, roomCode;
                 
-                if (!participantName || !roomCode) {
+                if (isReturningUser) {
+                    participantName = returningNameInput.value.trim();
+                    participantPassword = returningPasswordInput.value.trim();
+                    roomCode = returningRoomCodeInput.value.trim().toUpperCase();
+                } else {
+                    participantName = participantNameInput.value.trim();
+                    participantPassword = participantPasswordInput.value.trim();
+                    roomCode = roomCodeInput.value.trim().toUpperCase();
+                }
+                
+                if (!participantName || !participantPassword || !roomCode) {
                     alert('Por favor, preencha todos os campos.');
                     return;
                 }
                 
                 try {
-                    // Verificar se a sala existe
                     const roomDoc = await db.collection('rooms').doc(roomCode).get();
                     
                     if (!roomDoc.exists) {
@@ -440,35 +665,42 @@
                     
                     const roomData = roomDoc.data();
                     
-                    // Verificar se o nome já existe na sala
-                    if (roomData.participants.includes(participantName)) {
-                        alert('Já existe um participante com esse nome na sala.');
-                        return;
+                    if (isReturningUser) {
+                        // Verificar se o usuário já existe com a senha correta
+                        if (!roomData.participantPasswords || 
+                            roomData.participantPasswords[participantName] !== participantPassword) {
+                            alert('Nome ou palavra-passe incorretos.');
+                            return;
+                        }
+                    } else {
+                        // Novo usuário - verificar se o nome já existe
+                        if (roomData.participants.includes(participantName)) {
+                            alert('Já existe um participante com esse nome na sala.');
+                            return;
+                        }
+                        
+                        // Adicionar novo participante
+                        await db.collection('rooms').doc(roomCode).update({
+                            participants: firebase.firestore.FieldValue.arrayUnion(participantName),
+                            [`participantPasswords.${participantName}`]: participantPassword
+                        });
                     }
                     
-                    // Adicionar participante à sala
-                    await db.collection('rooms').doc(roomCode).update({
-                        participants: firebase.firestore.FieldValue.arrayUnion(participantName)
-                    });
-                    
-                    // Definir usuário atual
                     currentUser = participantName;
+                    currentUserPassword = participantPassword;
                     isHost = false;
                     currentRoom = roomCode;
                     
-                    // Atualizar UI
                     displayRoomName.textContent = roomData.name;
                     displayRoomCode.textContent = roomCode;
                     
-                    // Configurar listener em tempo real para atualizações
                     setupRoomListener(roomCode);
+                    setupChatListener(roomCode);
                     
-                    // Mostrar seção da sala
                     joinSection.classList.remove('active');
                     roomSection.classList.add('active');
                     initialOptions.style.display = 'none';
                     
-                    // Esconder controles do anfitrião para participantes comuns
                     document.getElementById('host-controls').style.display = 'none';
                 } catch (error) {
                     console.error('Erro ao entrar na sala:', error);
@@ -481,59 +713,48 @@
                 if (!currentRoom || !currentUser) return;
                 
                 try {
-                    if (isHost) {
-                        // Se for o anfitrião, remover a sala completamente
-                        await db.collection('rooms').doc(currentRoom).delete();
-                    } else {
-                        // Se for participante, remover da lista
-                        await db.collection('rooms').doc(currentRoom).update({
-                            participants: firebase.firestore.FieldValue.arrayRemove(currentUser)
-                        });
-                    }
-                    
-                    // Parar o listener em tempo real
-                    if (roomListener) {
-                        roomListener();
-                    }
+                    // Parar listeners
+                    if (roomListener) roomListener();
+                    if (chatListener) chatListener();
                     
                     // Limpar estado
                     currentRoom = null;
                     currentUser = null;
+                    currentUserPassword = null;
                     isHost = false;
                     
-                    // Voltar para a tela inicial
+                    // Voltar para tela inicial
                     roomSection.classList.remove('active');
                     createSection.classList.add('active');
                     initialOptions.style.display = 'block';
                     
                     // Limpar formulários
                     hostNameInput.value = '';
+                    hostPasswordInput.value = '';
                     roomNameInput.value = '';
                     participantNameInput.value = '';
+                    participantPasswordInput.value = '';
                     roomCodeInput.value = '';
+                    returningNameInput.value = '';
+                    returningPasswordInput.value = '';
+                    returningRoomCodeInput.value = '';
                 } catch (error) {
                     console.error('Erro ao sair da sala:', error);
                     alert('Erro ao sair da sala. Tente novamente.');
                 }
             });
             
-            // Voltar para a sala a partir dos resultados
-            backToRoomBtn.addEventListener('click', () => {
-                resultSection.classList.remove('active');
-                roomSection.classList.add('active');
-            });
-            
-            // Realizar o sorteio
+            // Sorteio
             startDrawBtn.addEventListener('click', async () => {
                 if (!currentRoom) return;
                 
                 try {
-                    // Obter dados atuais da sala
                     const roomDoc = await db.collection('rooms').doc(currentRoom).get();
                     
                     if (!roomDoc.exists) {
                         alert('Sala não encontrada.');
-                        return;    }
+                        return;
+                    }
                     
                     const roomData = roomDoc.data();
                     
@@ -542,15 +763,12 @@
                         return;
                     }
                     
-                    // Realizar o sorteio
                     const drawResult = performDraw(roomData.participants);
                     
-                    // Atualizar a sala com os resultados
                     await db.collection('rooms').doc(currentRoom).update({
                         drawnPairs: drawResult
                     });
                     
-                    // Mostrar o resultado para o anfitrião (que vê todos os pares)
                     if (isHost) {
                         let resultMessage = "Resultado do sorteio:\n\n";
                         for (const [giver, receiver] of Object.entries(drawResult)) {
@@ -559,10 +777,7 @@
                         alert(resultMessage);
                     }
                     
-                    // Mostrar o resultado para o usuário atual
                     drawnFriend.textContent = drawResult[currentUser];
-                    
-                    // Mostrar a seção de resultados
                     roomSection.classList.remove('active');
                     resultSection.classList.add('active');
                 } catch (error) {
@@ -571,12 +786,44 @@
                 }
             });
             
-            // Configurar listener em tempo real para a sala
+            // Enviar mensagem no chat
+            sendMessageBtn.addEventListener('click', sendMessage);
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') sendMessage();
+            });
+            
+            function sendMessage() {
+              const messageText = chatInput.value.trim();
+    
+              // Verificação mais robusta
+              if (!messageText) {
+              alert('Digite uma mensagem!');
+              return;
+              }
+              if (!currentRoom || !currentUser) {
+              alert('Você precisa estar em uma sala para enviar mensagens!');
+              return;
+              }
+    
+    console.log('Enviando mensagem para sala:', currentRoom);
+    
+    // Adicionar tratamento de erro
+    db.collection('rooms').doc(currentRoom).collection('messages').add({
+        sender: currentUser,
+        text: messageText,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+        console.log('✅ Mensagem enviada com sucesso!');
+        chatInput.value = ''; // Limpa só se enviar com sucesso
+    }).catch((error) => {
+        console.error('❌ Erro ao enviar mensagem:', error);
+        alert('Erro ao enviar mensagem: ' + error.message);
+    });
+}
+            
+            // Listener da sala
             function setupRoomListener(roomCode) {
-                // Parar listener anterior se existir
-                if (roomListener) {
-                    roomListener();
-                }
+                if (roomListener) roomListener();
                 
                 roomListener = db.collection('rooms').doc(roomCode)
                     .onSnapshot((doc) => {
@@ -584,7 +831,6 @@
                             const roomData = doc.data();
                             updateParticipantsList(roomData.participants, roomData.host);
                             
-                            // Se o sorteio foi realizado e o usuário está na sala, mostrar resultado
                             if (roomData.drawnPairs && roomData.drawnPairs[currentUser] && 
                                 roomSection.classList.contains('active')) {
                                 drawnFriend.textContent = roomData.drawnPairs[currentUser];
@@ -592,16 +838,82 @@
                                 resultSection.classList.add('active');
                             }
                         } else {
-                            // Sala foi excluída
                             alert('Esta sala foi excluída pelo anfitrião.');
                             leaveRoomBtn.click();
                         }
-                    }, (error) => {
-                        console.error('Erro no listener da sala:', error);
                     });
             }
             
-            // Atualizar a lista de participantes
+            // Listener do chat
+            function setupChatListener(roomCode) {
+               // Parar listener anterior
+               if (chatListener) {
+                  chatListener();
+                  console.log('🔄 Parando listener anterior do chat');
+                }
+    
+               console.log('🎯 Iniciando novo listener para sala:', roomCode);
+    
+               // Configurar novo listener com tratamento de erro
+               chatListener = db.collection('rooms').doc(roomCode)
+                  .collection('messages')
+                  .orderBy('timestamp', 'asc')
+                  .onSnapshot((snapshot) => {
+               console.log('📨 Recebidas', snapshot.size, 'mensagens');
+            
+               // Limpar chat
+               chatMessages.innerHTML = '';
+            
+                // Verificar se há mensagens
+               if (snapshot.empty) {
+                   console.log('💬 Chat vazio');
+                   const emptyMsg = document.createElement('div');
+                   emptyMsg.textContent = 'Nenhuma mensagem ainda. Seja o primeiro a escrever!';
+                   emptyMsg.style.textAlign = 'center';
+                   emptyMsg.style.color = '#666';
+                   emptyMsg.style.padding = '20px';
+                   chatMessages.appendChild(emptyMsg);
+                   return;
+               }
+            
+               // Processar cada mensagem
+               snapshot.forEach(doc => {
+                   const message = doc.data();
+                   console.log('💬 Mensagem:', message);
+                   displayMessage(message.sender, message.text, message.timestamp);
+               });
+            
+               // Scroll automático para a última mensagem
+               setTimeout(() => {
+                   chatMessages.scrollTop = chatMessages.scrollHeight;
+               }, 100);
+            
+            }, (error) => {
+                // Tratamento de erro IMPORTANTE
+                console.error('❌ Erro no listener do chat:', error);
+                alert('Erro ao conectar ao chat: ' + error.message);
+                });
+             }
+            
+            // Exibir mensagem no chat
+            function displayMessage(sender, text, timestamp) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender === currentUser ? 'own' : 'other'}`;
+                
+                const senderDiv = document.createElement('div');
+                senderDiv.className = 'message-sender';
+                senderDiv.textContent = sender === currentUser ? 'Você' : sender;
+                
+                const textDiv = document.createElement('div');
+                textDiv.className = 'message-text';
+                textDiv.textContent = text;
+                
+                messageDiv.appendChild(senderDiv);
+                messageDiv.appendChild(textDiv);
+                chatMessages.appendChild(messageDiv);
+            }
+            
+            // Atualizar lista de participantes
             function updateParticipantsList(participants, host) {
                 participantsList.innerHTML = '';
                 participants.forEach(participant => {
@@ -624,7 +936,11 @@
                 });
             }
             
-            // Gerar código aleatório para a sala
+            backToRoomBtn.addEventListener('click', () => {
+                resultSection.classList.remove('active');
+                roomSection.classList.add('active');
+            });
+            
             function generateRoomCode() {
                 const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
                 let result = '';
@@ -634,23 +950,19 @@
                 return result;
             }
             
-            // Realizar o sorteio (algoritmo para garantir que ninguém tire a si mesmo)
             function performDraw(participants) {
                 const receivers = [...participants];
                 const result = {};
                 
-                // Embaralhar a lista de receptores
                 for (let i = receivers.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [receivers[i], receivers[j]] = [receivers[j], receivers[i]];
                 }
                 
-                // Atribuir cada doador a um receptor, garantindo que ninguém tire a si mesmo
                 for (let i = 0; i < participants.length; i++) {
                     let giver = participants[i];
                     let receiver = receivers[i];
                     
-                    // Se a pessoa tirar a si mesma, trocar com a próxima
                     if (giver === receiver) {
                         const nextIndex = (i + 1) % participants.length;
                         receivers[i] = receivers[nextIndex];
@@ -667,5 +979,3 @@
     </script>
 </body>
 </html>
-```
-   
