@@ -350,8 +350,8 @@
 <body>
     <div class="container">
         <header>
-            <h1>Amigo Oculto Premium</h1>
-            <p class="subtitle">Com chat e login seguro!</p>
+            <h1>Amigo Oculto Online</h1>
+            <p class="subtitle">Organize seu amigo secreto de forma fácil e divertida. Agora com chat, login seguro e sorteio!</p>
         </header>
         
         <main style="flex: 1; overflow-y: auto;">
@@ -569,6 +569,7 @@
                     this.classList.add('active');
                     
                     // Atualizar conteúdo
+                     // Atualizar conteúdo
                     document.querySelectorAll('.tab-content').forEach(content => {
                         content.classList.remove('active');
                     });
@@ -688,7 +689,7 @@
                     
                     currentUser = participantName;
                     currentUserPassword = participantPassword;
-                    isHost = false;
+                    isHost = (roomData.host === participantName);
                     currentRoom = roomCode;
                     
                     displayRoomName.textContent = roomData.name;
@@ -744,9 +745,14 @@
                 }
             });
             
-            // Sorteio
+            // Sorteio - FUNCIONALIDADE COMPLETA
             startDrawBtn.addEventListener('click', async () => {
                 if (!currentRoom) return;
+                
+                // Confirmação do anfitrião
+                if (!confirm('Tem certeza que deseja realizar o sorteio? Esta ação não pode ser desfeita.')) {
+                    return;
+                }
                 
                 try {
                     const roomDoc = await db.collection('rooms').doc(currentRoom).get();
@@ -763,63 +769,65 @@
                         return;
                     }
                     
+                    // Mostrar loading
+                    startDrawBtn.textContent = 'Sorteando...';
+                    startDrawBtn.disabled = true;
+                    
                     const drawResult = performDraw(roomData.participants);
                     
                     await db.collection('rooms').doc(currentRoom).update({
                         drawnPairs: drawResult
                     });
                     
+                    // Mostrar resultado para o anfitrião
                     if (isHost) {
-                        let resultMessage = "Resultado do sorteio:\n\n";
+                        let resultMessage = "🎉 Sorteio Realizado! 🎉\n\n";
                         for (const [giver, receiver] of Object.entries(drawResult)) {
-                            resultMessage += `${giver} tirou ${receiver}\n`;
+                            resultMessage += `🎁 ${giver} tirou ${receiver}\n`;
                         }
+                        resultMessage += "\nCada participante verá apenas quem tirou!";
                         alert(resultMessage);
                     }
                     
-                    drawnFriend.textContent = drawResult[currentUser];
-                    roomSection.classList.remove('active');
-                    resultSection.classList.add('active');
+                    // Restaurar botão
+                    startDrawBtn.textContent = 'Sorteio Realizado';
+                    startDrawBtn.disabled = true;
+                    startDrawBtn.style.background = 'linear-gradient(90deg, #28a745, #20c997)';
+                    
                 } catch (error) {
                     console.error('Erro ao realizar sorteio:', error);
                     alert('Erro ao realizar sorteio. Tente novamente.');
+                    
+                    // Restaurar botão em caso de erro
+                    startDrawBtn.textContent = 'Realizar Sorteio';
+                    startDrawBtn.disabled = false;
                 }
             });
             
-            // Enviar mensagem no chat
+            // Chat - FUNCIONALIDADE COMPLETA
+            function sendMessage() {
+                const messageText = chatInput.value.trim();
+                if (!messageText || !currentRoom || !currentUser) {
+                    alert('Digite uma mensagem primeiro!');
+                    return;
+                }
+                
+                db.collection('rooms').doc(currentRoom).collection('messages').add({
+                    sender: currentUser,
+                    text: messageText,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    chatInput.value = '';
+                }).catch((error) => {
+                    console.error('Erro ao enviar mensagem:', error);
+                    alert('Erro ao enviar mensagem. Tente novamente.');
+                });
+            }
+            
             sendMessageBtn.addEventListener('click', sendMessage);
             chatInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') sendMessage();
             });
-            
-            function sendMessage() {
-              const messageText = chatInput.value.trim();
-    
-              // Verificação mais robusta
-              if (!messageText) {
-              alert('Digite uma mensagem!');
-              return;
-              }
-              if (!currentRoom || !currentUser) {
-              alert('Você precisa estar em uma sala para enviar mensagens!');
-              return;
-              }
-    
-    console.log('Enviando mensagem para sala:', currentRoom);
-    
-    // Adicionar tratamento de erro
-    db.collection('rooms').doc(currentRoom).collection('messages').add({
-        sender: currentUser,
-        text: messageText,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-        console.log('✅ Mensagem enviada com sucesso!');
-        chatInput.value = ''; // Limpa só se enviar com sucesso
-    }).catch((error) => {
-        console.error('❌ Erro ao enviar mensagem:', error);
-        alert('Erro ao enviar mensagem: ' + error.message);
-    });
-}
             
             // Listener da sala
             function setupRoomListener(roomCode) {
@@ -831,6 +839,26 @@
                             const roomData = doc.data();
                             updateParticipantsList(roomData.participants, roomData.host);
                             
+                            // Controle do botão de sorteio
+                            isHost = (roomData.host === currentUser);
+                            if (isHost) {
+                                document.getElementById('host-controls').style.display = 'block';
+                                if (roomData.drawnPairs && Object.keys(roomData.drawnPairs).length > 0) {
+                                    startDrawBtn.disabled = true;
+                                    startDrawBtn.textContent = 'Sorteio Realizado';
+                                    startDrawBtn.style.background = 'linear-gradient(90deg, #28a745, #20c997)';
+                                } else {
+                                    startDrawBtn.disabled = false;
+                                    startDrawBtn.textContent = 'Realizar Sorteio';
+                                    startDrawBtn.style.background = 'linear-gradient(90deg, #6a11cb, #2575fc)';
+                                }
+                            }
+                            else{
+                               document.getElementById('host-controls').style.display = none;
+                            }
+                            
+                            
+                            // Mostrar resultado do sorteio
                             if (roomData.drawnPairs && roomData.drawnPairs[currentUser] && 
                                 roomSection.classList.contains('active')) {
                                 drawnFriend.textContent = roomData.drawnPairs[currentUser];
@@ -846,54 +874,33 @@
             
             // Listener do chat
             function setupChatListener(roomCode) {
-               // Parar listener anterior
-               if (chatListener) {
-                  chatListener();
-                  console.log('🔄 Parando listener anterior do chat');
-                }
-    
-               console.log('🎯 Iniciando novo listener para sala:', roomCode);
-    
-               // Configurar novo listener com tratamento de erro
-               chatListener = db.collection('rooms').doc(roomCode)
-                  .collection('messages')
-                  .orderBy('timestamp', 'asc')
-                  .onSnapshot((snapshot) => {
-               console.log('📨 Recebidas', snapshot.size, 'mensagens');
-            
-               // Limpar chat
-               chatMessages.innerHTML = '';
-            
-                // Verificar se há mensagens
-               if (snapshot.empty) {
-                   console.log('💬 Chat vazio');
-                   const emptyMsg = document.createElement('div');
-                   emptyMsg.textContent = 'Nenhuma mensagem ainda. Seja o primeiro a escrever!';
-                   emptyMsg.style.textAlign = 'center';
-                   emptyMsg.style.color = '#666';
-                   emptyMsg.style.padding = '20px';
-                   chatMessages.appendChild(emptyMsg);
-                   return;
-               }
-            
-               // Processar cada mensagem
-               snapshot.forEach(doc => {
-                   const message = doc.data();
-                   console.log('💬 Mensagem:', message);
-                   displayMessage(message.sender, message.text, message.timestamp);
-               });
-            
-               // Scroll automático para a última mensagem
-               setTimeout(() => {
-                   chatMessages.scrollTop = chatMessages.scrollHeight;
-               }, 100);
-            
-            }, (error) => {
-                // Tratamento de erro IMPORTANTE
-                console.error('❌ Erro no listener do chat:', error);
-                alert('Erro ao conectar ao chat: ' + error.message);
-                });
-             }
+                if (chatListener) chatListener();
+                
+                chatListener = db.collection('rooms').doc(roomCode)
+                    .collection('messages')
+                    .orderBy('timestamp', 'asc')
+                    .onSnapshot((snapshot) => {
+                        chatMessages.innerHTML = '';
+                        
+                        if (snapshot.empty) {
+                            const emptyMsg = document.createElement('div');
+                            emptyMsg.textContent = 'Nenhuma mensagem ainda. Seja o primeiro a escrever!';
+                            emptyMsg.style.textAlign = 'center';
+                            emptyMsg.style.color = '#666';
+                            emptyMsg.style.padding = '20px';
+                            chatMessages.appendChild(emptyMsg);
+                            return;
+                        }
+                        
+                        snapshot.forEach(doc => {
+                            const message = doc.data();
+                            displayMessage(message.sender, message.text, message.timestamp);
+                        });
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }, (error) => {
+                        console.error('Erro no chat:', error);
+                    });
+            }
             
             // Exibir mensagem no chat
             function displayMessage(sender, text, timestamp) {
@@ -979,3 +986,6 @@
     </script>
 </body>
 </html>
+```
+                    
+                
